@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini CRM | Nascimento Solutions</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230284c7'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='48' fill='white'>NS</text></svg>">
+  <style>
+    html { scroll-behavior: smooth; }
+    * { box-sizing: border-box; font-family: sans-serif; }
+    body { background: #0f172a; color: #f8fafc; padding: 20px 20px 80px 20px; max-width: 500px; margin: auto; }
+    .assinatura-topo { text-align: center; font-size: 0.8rem; color: #94a3b8; margin-bottom: 8px; }
+    h1 { color: #38bdf8; font-size: 1.5rem; text-align: center; margin-top: 4px; }
+    .card { background: #1e293b; padding: 16px; border-radius: 10px; margin-bottom: 20px; }
+    input, select, button {
+      width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; border: none; font-size: 1rem;
+    }
+    input, select { background: #334155; color: #fff; }
+    button { background: #0284c7; color: #fff; font-weight: bold; cursor: pointer; }
+    button:active { background: #0369a1; }
+    .lead-item { background: #334155; padding: 12px; border-radius: 8px; margin-top: 10px; border-left: 4px solid #38bdf8; }
+    .lead-item small { color: #94a3b8; display: block; margin-top: 4px; }
+    footer { text-align: center; margin-top: 30px; padding-top: 16px; border-top: 1px solid #1e293b; color: #94a3b8; font-size: 0.85rem; }
+    .btn-topo {
+      display: inline-flex; align-items: center; justify-content: center;
+      margin-top: 12px; width: 38px; height: 38px; border-radius: 50%;
+      background: #1e293b; color: #38bdf8; text-decoration: none; font-size: 1.2rem;
+      border: 1px solid #334155;
+    }
+    .whatsapp-float {
+      position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px;
+      background-color: #25d366; color: #fff; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4); z-index: 1000; text-decoration: none;
+    }
+  </style>
+</head>
+<body id="topo">
+
+  <div class="assinatura-topo">Criado por Tatiane, Grupo Nascimento Solutions</div>
+  <h1>Nascimento Solutions • Leads</h1>
+
+  <div class="card">
+    <input type="text" id="nome" placeholder="Nome do Cliente / Empresa" required>
+    <input type="tel" id="whatsapp" placeholder="WhatsApp (ex: 11999999999)" required>
+    <select id="interesse">
+      <option value="Landing Page">Interesse: Landing Page</option>
+      <option value="Site Institucional">Interesse: Site Institucional</option>
+      <option value="Automação / Sistema">Interesse: Automação / Sistema</option>
+    </select>
+    <button onclick="salvarLead()">Salvar Cliente</button>
+  </div>
+
+  <div class="card">
+    <strong>Clientes Cadastrados:</strong>
+    <div id="lista-leads">Carregando...</div>
+  </div>
+
+  <footer>
+    <div>Criado por Tatiane, Grupo Nascimento Solutions</div>
+    <a href="#topo" class="btn-topo" title="Voltar ao topo" aria-label="Voltar ao topo">&#8593;</a>
+  </footer>
+
+  <a href="https://wa.me/5511910526709?text=Ol%C3%A1%20Tatiane!%20Vim%20pelo%20sistema%20da%20Nascimento%20Solutions%20e%20gostaria%20de%20saber%20mais%20sobre%20seus%20servi%C3%A7os." class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Falar no WhatsApp">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12.031 2C6.508 2 2.023 6.485 2.023 12.008c0 1.766.461 3.49 1.337 5.011L2 22l5.107-1.339a9.96 9.96 0 0 0 4.924 1.298h.004c5.522 0 10.007-4.485 10.007-10.008A9.946 9.946 0 0 0 19.11 4.92 9.938 9.938 0 0 0 12.031 2zm5.822 14.286c-.246.693-1.432 1.326-1.986 1.409-.51.076-1.155.108-1.864-.117-.431-.137-.983-.32-1.689-.625-2.971-1.283-4.911-4.274-5.059-4.472-.148-.198-1.208-1.608-1.208-3.067 0-1.459.764-2.176 1.036-2.473.272-.297.593-.371.79-.371.198 0 .395.002.568.01.182.009.426-.069.667.509.247.593.84 2.052.914 2.2.074.149.123.322.025.52-.099.198-.148.321-.296.494-.148.173-.312.386-.445.519-.148.148-.303.309-.13.606.173.297.768 1.267 1.649 2.052 1.133 1.01 2.088 1.323 2.385 1.471.296.149.469.124.642-.074.173-.198.741-.865.939-1.162.197-.297.395-.247.667-.148.272.099 1.729.815 2.025.964.297.148.494.222.568.346.074.124.074.717-.172 1.41z"/>
+    </svg>
+  </a>
+
+  <script>
+    async function carregarLeads() {
+      const resposta = await fetch('/api/leads');
+      const leads = await resposta.json();
+      const lista = document.getElementById('lista-leads');
+      
+      if (leads.length === 0) {
+        lista.innerHTML = '<p style="color:#94a3b8">Nenhum cliente cadastrado ainda.</p>';
+        return;
+      }
+
+      lista.innerHTML = leads.map(lead => `
+        <div class="lead-item">
+          <strong>${lead.nome}</strong> • ${lead.interesse}
+          <small>📱 ${lead.whatsapp} | 📅 ${lead.data}</small>
+        </div>
+      `).reverse().join('');
+    }
+
+    async function salvarLead() {
+      const nome = document.getElementById('nome').value;
+      const whatsapp = document.getElementById('whatsapp').value;
+      const interesse = document.getElementById('interesse').value;
+
+      if (!nome || !whatsapp) {
+        alert('Preencha o nome e o WhatsApp!');
+        return;
+      }
+
+      await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, whatsapp, interesse })
+      });
+
+      document.getElementById('nome').value = '';
+      document.getElementById('whatsapp').value = '';
+      carregarLeads();
+    }
+
+    carregarLeads();
+  </script>
+
+</body>
+</html>
